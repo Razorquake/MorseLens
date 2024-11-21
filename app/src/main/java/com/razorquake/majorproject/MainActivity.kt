@@ -23,14 +23,10 @@ class MainActivity : ComponentActivity() {
         } else {
             Log.d("OpenCV", "Initialization succeeded")
         }
-        val viewModel by viewModels<MorseCodeViewModel>()
-        val state = viewModel.state
         enableEdgeToEdge()
         setContent {
             MajorProjectTheme {
-
-                    MorseCodeTranslator(state.value, viewModel::onEvent)
-
+                    Navigator()
             }
         }
     }

@@ -44,7 +44,7 @@ class MorseCodeViewModel: ViewModel() {
                 }
                 delay(unitTime) // Space between symbols
             }
-            delay(3 * unitTime) // Space between letters
+            delay(4 * unitTime) // Space between letters
         }
     }
 
