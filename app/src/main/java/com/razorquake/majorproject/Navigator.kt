@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,7 +35,8 @@ fun Navigator(){
             }
             composable<Screen.MorseCodeTranslator> {
                 val viewModel: MorseCodeViewModel = viewModel()
-                MorseCodeTranslator(viewModel.state.value, viewModel::onEvent)
+                val state = viewModel.state.collectAsStateWithLifecycle().value
+                MorseCodeTranslator(state, viewModel::onEvent)
             }
             composable<Screen.FlashDetector> {
                 FlashDetector()
