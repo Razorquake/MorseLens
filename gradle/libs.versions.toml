@@ -12,6 +12,7 @@ opencv = "4.10.0"
 cameraXVersion = "1.4.0"
 navigationCompose = "2.8.4"
 serialization="1.7.3"
+translate = "17.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +38,7 @@ androidx-camera-extensions = {group = "androidx.camera", name = "camera-extensio
 androidx-camera-camera2 = {group = "androidx.camera", name = "camera-camera2", version.ref = "cameraXVersion"}
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlin-serialization-json-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-jvm", version.ref = "serialization" }
+translate = { module = "com.google.mlkit:translate", version.ref = "translate" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
