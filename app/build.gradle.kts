@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.razorquake.majorproject"
+    namespace = "com.razorquake.morselens"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.razorquake.majorproject"
+        applicationId = "com.razorquake.morselens"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

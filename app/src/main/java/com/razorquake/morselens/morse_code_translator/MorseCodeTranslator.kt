@@ -1,4 +1,4 @@
-package com.razorquake.majorproject.morse_code_translator
+package com.razorquake.morselens.morse_code_translator
 
 import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +61,11 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
             enabled = !state.isListening && !state.isTransmitting
 
         )
+        WaveformVisualizer(
+            rmsHistory = state.rmsHistory,
+            isListening = state.isListening,
+            modifier = Modifier.padding(16.dp)
+        )
         Button(
             onClick = {
                 if (!hasAudioPermission) {
@@ -72,7 +77,7 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
                     onEvent(MorseCodeEvent.StartListening(context))
                 }
             },
-            enabled = !state.isTransmitting,
+            enabled = !state.isTransmitting&&!state.isTranslating,
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (state.isListening)
                     MaterialTheme.colorScheme.error

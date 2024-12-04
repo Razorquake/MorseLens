@@ -1,4 +1,4 @@
-package com.razorquake.majorproject
+package com.razorquake.morselens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,9 +10,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.razorquake.majorproject.home.HomeScreen
-import com.razorquake.majorproject.morse_code_translator.MorseCodeTranslator
-import com.razorquake.majorproject.morse_code_translator.MorseCodeViewModel
+import com.razorquake.morselens.home.HomeScreen
+import com.razorquake.morselens.morse_code_translator.MorseCodeTranslator
+import com.razorquake.morselens.morse_code_translator.MorseCodeViewModel
 
 @Composable
 fun Navigator(){

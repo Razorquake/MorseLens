@@ -1,4 +1,4 @@
-package com.razorquake.majorproject.ui.theme
+package com.razorquake.morselens.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,7 +1,7 @@
-package com.razorquake.majorproject.morse_code_translator
+package com.razorquake.morselens.morse_code_translator
 
 import android.content.Context
-import com.razorquake.majorproject.morse_code_translator.speech.Language
+import com.razorquake.morselens.morse_code_translator.speech.Language
 
 sealed class MorseCodeEvent {
     data class SetUnitTime(val unitTime: Long) : MorseCodeEvent()

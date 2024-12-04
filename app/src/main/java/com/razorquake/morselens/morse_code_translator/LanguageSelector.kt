@@ -1,4 +1,4 @@
-package com.razorquake.majorproject.morse_code_translator
+package com.razorquake.morselens.morse_code_translator
 
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.razorquake.majorproject.morse_code_translator.speech.Language
+import com.razorquake.morselens.morse_code_translator.speech.Language
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

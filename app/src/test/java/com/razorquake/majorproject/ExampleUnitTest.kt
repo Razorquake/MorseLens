@@ -1,4 +1,4 @@
-package com.razorquake.majorproject
+package com.razorquake.morselens
 
 import org.junit.Test
 

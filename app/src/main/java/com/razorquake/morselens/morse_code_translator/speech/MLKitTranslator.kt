@@ -1,4 +1,4 @@
-package com.razorquake.majorproject.morse_code_translator.speech
+package com.razorquake.morselens.morse_code_translator.speech
 
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage

@@ -1,4 +1,4 @@
-package com.razorquake.majorproject
+package com.razorquake.morselens
 
 import android.Manifest
 import android.content.pm.PackageManager

@@ -1,18 +1,15 @@
-package com.razorquake.majorproject
+package com.razorquake.morselens
 
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.razorquake.majorproject.morse_code_translator.MorseCodeTranslator
-import com.razorquake.majorproject.morse_code_translator.MorseCodeViewModel
-import com.razorquake.majorproject.ui.theme.MajorProjectTheme
+import com.razorquake.morselens.ui.theme.MorseLensTheme
 import org.opencv.android.OpenCVLoader
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +22,7 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
-            MajorProjectTheme {
+            MorseLensTheme {
                     Navigator()
             }
         }
@@ -43,7 +40,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    MajorProjectTheme {
+    MorseLensTheme {
         Greeting("Android")
     }
 }

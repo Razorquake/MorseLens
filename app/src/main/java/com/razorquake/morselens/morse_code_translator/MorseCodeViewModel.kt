@@ -1,4 +1,4 @@
-package com.razorquake.majorproject.morse_code_translator
+package com.razorquake.morselens.morse_code_translator
 
 import android.content.Context
 import android.content.Intent
@@ -12,8 +12,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.nl.translate.TranslateLanguage
-import com.razorquake.majorproject.morse_code_translator.speech.Language
-import com.razorquake.majorproject.morse_code_translator.speech.MLKitTranslator
+import com.razorquake.morselens.morse_code_translator.speech.Language
+import com.razorquake.morselens.morse_code_translator.speech.MLKitTranslator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -75,7 +75,7 @@ class MorseCodeViewModel(
     }
 
     private fun createRecognitionListener() = object : RecognitionListener {
-        override fun onReadyForSpeech(params: android.os.Bundle?) {
+        override fun onReadyForSpeech(params: Bundle?) {
             Log.d("SpeechRecognition", "Ready for speech")
         }
 
@@ -84,7 +84,10 @@ class MorseCodeViewModel(
         }
 
         override fun onRmsChanged(rmsdB: Float) {
-            Log.d("", "")
+            _state.update {
+                val updatedHistory: List<Float> =listOf<Float>(rmsdB)+it.rmsHistory.dropLast(1)
+                it.copy(rmsHistory = updatedHistory)
+            }
         }
 
         override fun onBufferReceived(buffer: ByteArray?) {
@@ -121,7 +124,7 @@ class MorseCodeViewModel(
             val recognizedText = matches?.firstOrNull() ?: return
 
             _state.update { it.copy(
-                recognizedText=recognizedText
+                recognizedText=recognizedText, isTranslating = true, isListening = false
             ) }
             translateText(recognizedText)
         }
@@ -131,7 +134,7 @@ class MorseCodeViewModel(
             val recognizedText = matches?.firstOrNull() ?: return
             _state.update {
                 it.copy(
-                    recognizedText=recognizedText
+                    recognizedText=recognizedText, isTranslating = true
                 )
             }
             translateText(recognizedText)
@@ -152,10 +155,10 @@ class MorseCodeViewModel(
                     _state.value.selectedLanguage.code,
                     TranslateLanguage.ENGLISH
                 )
-                _state.update { it.copy(message =translatedText, error = null, isListening = false) }
+                _state.update { it.copy(message =translatedText, error = null, isTranslating = false) }
             } catch (e: Exception) {
                 _state.update {
-                    it.copy(error = "Translation failed: ${e.message}", isListening = false)
+                    it.copy(error = "Translation failed: ${e.message}", isTranslating = false)
                 }
             }
         }

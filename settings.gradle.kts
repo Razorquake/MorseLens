@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MajorProject"
+rootProject.name = "MorseLens"
 include(":app")
  
