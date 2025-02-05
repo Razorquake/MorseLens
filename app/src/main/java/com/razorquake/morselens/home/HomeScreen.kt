@@ -25,7 +25,8 @@ import com.razorquake.morselens.R
 @Composable
 fun HomeScreen(
     onMorseCodeTranslator: () -> Unit,
-    onFlashDetector: () -> Unit
+    onFlashDetector: () -> Unit,
+    onDictionary: () -> Unit
 ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Text("Home", style = MaterialTheme.typography.headlineMedium)
@@ -102,6 +103,45 @@ fun HomeScreen(
                 headlineContent = {Text("Flash Detector", style = MaterialTheme.typography.bodyLarge)},
                 supportingContent = {Text("Translate Morse Code to Text", style = MaterialTheme.typography.bodyMedium)},
                 modifier = Modifier.clickable { onFlashDetector() }
+            )
+            ListItem(
+                leadingContent = {
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .offset((-4).dp, (-4).dp) // Shift the icon up and left
+                    ) {
+                        // Shadow box
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .shadow(8.dp, RoundedCornerShape(12.dp))
+                                .background(colorResource(R.color.input_background))
+                        )
+
+                        // Icon box
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(colorResource(R.color.input_background)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.book),
+                                contentDescription = "Sign Language Icon",
+                                tint = colorResource(R.color.text_title),
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                    }
+                },
+                headlineContent = {Text("Dictionary", style = MaterialTheme.typography.bodyLarge)},
+                supportingContent = {Text("Learn Morse Code", style = MaterialTheme.typography.bodyMedium)},
+                modifier = Modifier.clickable {
+                    onDictionary()
+                }
             )
         }
 }

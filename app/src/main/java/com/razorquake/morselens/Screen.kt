@@ -9,4 +9,6 @@ sealed class Screen {
     data object MorseCodeTranslator : Screen()
     @Serializable
     data object FlashDetector : Screen()
+    @Serializable
+    data object Dictionary : Screen()
 }

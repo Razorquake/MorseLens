@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
@@ -29,17 +31,25 @@ import kotlin.math.abs
 fun WaveformVisualizer(
     rmsHistory: List<Float>,
     isListening: Boolean,
+    onHistoryChanged: (Int)-> Unit,
     modifier: Modifier = Modifier,
     barColor: Color = Color.White
 ) {
     val barWidth = 4.dp
     val spacing = 2.dp
-
+    val density = LocalDensity.current
     Row(
         modifier = modifier
             .height(60.dp)
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
+            .onSizeChanged { size ->
+                with(density) {
+                    val totalBarWidth = (barWidth + spacing + spacing).toPx()
+                    val availableBars = (size.width/totalBarWidth).toInt()
+                    onHistoryChanged(availableBars)
+                }
+            }
             .background(Color.Black, shape = RoundedCornerShape(15.dp))
             .border(width =1.dp, color =colorResource(R.color.input_background), shape = RoundedCornerShape(15.dp) ),
         horizontalArrangement = Arrangement.Center,
@@ -47,7 +57,7 @@ fun WaveformVisualizer(
     ) {
         rmsHistory.forEachIndexed { index, rms ->
             // Calculate height based on position and RMS value
-            val heightMultiplier = remember(index) {
+            val heightMultiplier = remember(index, rmsHistory.size) {
                 // Create a smoother wave pattern
                 kotlin.math.sin(index * (Math.PI / rmsHistory.size)).toFloat() * 0.5f + 0.5f
             }

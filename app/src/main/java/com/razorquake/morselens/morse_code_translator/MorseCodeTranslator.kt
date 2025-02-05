@@ -1,7 +1,6 @@
 package com.razorquake.morselens.morse_code_translator
 
 import android.content.pm.PackageManager
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,8 +23,18 @@ import androidx.core.content.ContextCompat
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import android.Manifest
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import com.razorquake.morselens.R
+import com.razorquake.morselens.ui.theme.MorseLensTheme
 
 
 @Composable
@@ -58,13 +67,13 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
             languages = state.supportedLanguage,
             selectedLanguage = state.selectedLanguage,
             onLanguageSelected = { onEvent(MorseCodeEvent.SetSelectedLanguage(it)) },
-            enabled = !state.isListening && !state.isTransmitting
-
+            enabled = !state.isListening && state.transmissionMode == TransmissionMode.NONE
         )
         WaveformVisualizer(
             rmsHistory = state.rmsHistory,
             isListening = state.isListening,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
+            onHistoryChanged = { onEvent(MorseCodeEvent.UpdateHistorySize(it)) }
         )
         Button(
             onClick = {
@@ -77,7 +86,7 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
                     onEvent(MorseCodeEvent.StartListening(context))
                 }
             },
-            enabled = !state.isTransmitting&&!state.isTranslating,
+            enabled = state.transmissionMode == TransmissionMode.NONE && !state.isTranslating,
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (state.isListening)
                     MaterialTheme.colorScheme.error
@@ -89,9 +98,9 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
         }
         TextField(
             value = state.message,
-            onValueChange = {onEvent(MorseCodeEvent.SetMessage(it))},
+            onValueChange = { onEvent(MorseCodeEvent.SetMessage(it)) },
             label = { Text("Enter message") },
-            enabled = !state.isTransmitting
+            enabled = state.transmissionMode == TransmissionMode.NONE
         )
         state.error?.let { error ->
             Text(
@@ -101,25 +110,91 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        if (!state.isTransmitting) {
-            Button(onClick = {
-                onEvent(MorseCodeEvent.SendMorseCode(context))
-                },
-                enabled = state.message.isNotBlank()
-            ) {
-                Text("Send Morse Code via Flashlight")
-            }
-        } else {
-            Button(
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            IconButton(
                 onClick = {
-                    onEvent(MorseCodeEvent.StopTransmission)
+                    if (state.transmissionMode == TransmissionMode.FLASHLIGHT) {
+                        onEvent(MorseCodeEvent.StopTransmission)
+                    } else {
+                        onEvent(MorseCodeEvent.SendMorseCode(context, TransmissionMode.FLASHLIGHT))
+                    }
                 },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
+                enabled = state.message.isNotBlank() && (state.transmissionMode == TransmissionMode.NONE || state.transmissionMode == TransmissionMode.FLASHLIGHT)
             ) {
-                Text("Stop Transmission")
+                Icon(
+                    painter = painterResource(R.drawable.flash),
+                    contentDescription = if (state.transmissionMode == TransmissionMode.FLASHLIGHT)
+                        "Stop Flashlight" else "Start Flashlight",
+                    tint = when {
+                        state.transmissionMode == TransmissionMode.FLASHLIGHT ->
+                            MaterialTheme.colorScheme.error
+
+                        state.message.isBlank() || state.transmissionMode != TransmissionMode.NONE ->
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+
+                        else ->
+                            MaterialTheme.colorScheme.onSurface
+                    }
+                )
             }
+            IconButton(
+                onClick = {
+                    if (state.transmissionMode == TransmissionMode.VIBRATION) {
+                        onEvent(MorseCodeEvent.StopTransmission)
+                    } else {
+                        onEvent(MorseCodeEvent.SendMorseCode(context, TransmissionMode.VIBRATION))
+                    }
+                },
+                enabled = state.message.isNotBlank() &&
+                        (state.transmissionMode == TransmissionMode.NONE || state.transmissionMode == TransmissionMode.VIBRATION)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.vibration),
+                    contentDescription = if (state.transmissionMode == TransmissionMode.VIBRATION)
+                        "Stop Vibration" else "Start Vibration",
+                    tint = when {
+                        state.transmissionMode == TransmissionMode.VIBRATION ->
+                            MaterialTheme.colorScheme.error
+
+                        state.message.isBlank() || state.transmissionMode != TransmissionMode.NONE ->
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+
+                        else ->
+                            MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            }
+            IconButton(
+                onClick = {
+                    if (state.transmissionMode == TransmissionMode.SOUND) {
+                        onEvent(MorseCodeEvent.StopTransmission)
+                    } else {
+                        onEvent(MorseCodeEvent.SendMorseCode(context, TransmissionMode.SOUND))
+                    }
+                },
+                enabled = state.message.isNotBlank() &&
+                        (state.transmissionMode == TransmissionMode.NONE || state.transmissionMode == TransmissionMode.SOUND)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.volume_up),
+                    contentDescription = if (state.transmissionMode == TransmissionMode.SOUND)
+                        "Stop Sound" else "Start Sound",
+                    tint = when {
+                        state.transmissionMode == TransmissionMode.SOUND ->
+                            MaterialTheme.colorScheme.error
+
+                        state.message.isBlank() || state.transmissionMode != TransmissionMode.NONE ->
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+
+                        else ->
+                            MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            }
+
         }
         Text(text = "Unit Time: ${state.unitTime} ms")
         Slider(
@@ -128,5 +203,14 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
             valueRange = 100f..450f,
         )
 
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun MorseCodeTranslatorPreview() {
+    MorseLensTheme {
+        MorseCodeTranslator(state = MorseCodeState(), onEvent = {})
     }
 }

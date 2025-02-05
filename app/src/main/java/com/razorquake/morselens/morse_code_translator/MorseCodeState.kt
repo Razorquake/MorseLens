@@ -4,10 +4,9 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.razorquake.morselens.morse_code_translator.speech.Language
 data class MorseCodeState(
     val message: String = "",
-    val error: String? = null,
+    override val error: String? = null,
     //Morse
-    val unitTime: Long = 200L,
-    val isTransmitting: Boolean = false,
+    override val unitTime: Long = 200L,
     //Speech
     val isListening: Boolean = false,
     var isTranslating: Boolean = false,
@@ -23,4 +22,13 @@ data class MorseCodeState(
         Language("اردو", TranslateLanguage.URDU),
     ),
     val selectedLanguage: Language = Language("हिंदी", TranslateLanguage.HINDI),
-    val rmsHistory: List<Float> = List(50) { 0f })
+    val rmsHistory: List<Float> = emptyList<Float>(),
+    override val transmissionMode: TransmissionMode = TransmissionMode.NONE
+): BaseState
+
+enum class TransmissionMode {
+    NONE,
+    FLASHLIGHT,
+    VIBRATION,
+    SOUND
+}

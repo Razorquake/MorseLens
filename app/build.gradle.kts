@@ -7,21 +7,30 @@ plugins {
 
 android {
     namespace = "com.razorquake.morselens"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.razorquake.morselens"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    splits {
+        abi {
+            isEnable= true
+            reset()
+            include( "armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk= false
+        }
+    }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -55,8 +64,6 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.video)
-    implementation(libs.androidx.camera.extensions)
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
