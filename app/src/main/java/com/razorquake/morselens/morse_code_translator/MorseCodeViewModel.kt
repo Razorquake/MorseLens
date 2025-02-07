@@ -9,18 +9,25 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.nl.translate.TranslateLanguage
+import com.razorquake.morselens.data.PreferencesManager
 import com.razorquake.morselens.morse_code_translator.speech.Language
 import com.razorquake.morselens.morse_code_translator.speech.MLKitTranslator
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MorseCodeViewModel(
+@HiltViewModel
+class MorseCodeViewModel @Inject constructor(
+    preferencesManager: PreferencesManager
+): BaseMorseViewModel<MorseCodeState>(
+    preferencesManager = preferencesManager
+) {
     private val translator: MLKitTranslator = MLKitTranslator()
-): BaseMorseViewModel<MorseCodeState>() {
     override val _state = MutableStateFlow(MorseCodeState())
     val state: StateFlow<MorseCodeState> = _state.asStateFlow()
 
@@ -32,7 +39,7 @@ class MorseCodeViewModel(
         _state.update { it.copy(transmissionMode = mode) }
     }
 
-    fun updateHistorySize(size: Int){
+    private fun updateHistorySize(size: Int){
         historySize = size
         _state.update {
             val currentHistory = it.rmsHistory
@@ -45,7 +52,7 @@ class MorseCodeViewModel(
         }
     }
 
-    fun startListening(context: Context) {
+    private fun startListening(context: Context) {
         if (_state.value.isListening) return
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
@@ -73,7 +80,7 @@ class MorseCodeViewModel(
         }
     }
 
-    fun stopListening() {
+    private fun stopListening() {
         speechRecognizer?.stopListening()
         speechRecognizer?.destroy()
         speechRecognizer = null
@@ -91,7 +98,7 @@ class MorseCodeViewModel(
 
         override fun onRmsChanged(rmsdB: Float) {
             _state.update {
-                val updatedHistory: List<Float> =listOf<Float>(rmsdB)+it.rmsHistory.dropLast(1)
+                val updatedHistory: List<Float> =listOf(rmsdB)+it.rmsHistory.dropLast(1)
                 it.copy(rmsHistory = updatedHistory)
             }
         }
@@ -170,16 +177,12 @@ class MorseCodeViewModel(
         }
     }
 
-    fun setSelectedLanguage(language: Language) {
+    private fun setSelectedLanguage(language: Language) {
         _state.update { it.copy(selectedLanguage = language) }
     }
 
     private fun setMessage(message: String) {
         _state.update { it.copy(message = message) }
-    }
-
-    override fun setUnitTime(unitTime: Long) {
-        _state.update { it.copy(unitTime = unitTime) }
     }
 
     override fun setError(error: String?) {
@@ -189,9 +192,6 @@ class MorseCodeViewModel(
 
     fun onEvent(event: MorseCodeEvent) {
         when (event) {
-            is MorseCodeEvent.SetUnitTime -> {
-                setUnitTime(event.unitTime)
-            }
             is MorseCodeEvent.SetMessage -> {
                 setMessage(event.message)
             }

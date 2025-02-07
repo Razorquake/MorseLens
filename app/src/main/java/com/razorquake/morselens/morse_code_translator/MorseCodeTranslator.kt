@@ -131,10 +131,8 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
                     tint = when {
                         state.transmissionMode == TransmissionMode.FLASHLIGHT ->
                             MaterialTheme.colorScheme.error
-
                         state.message.isBlank() || state.transmissionMode != TransmissionMode.NONE ->
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-
                         else ->
                             MaterialTheme.colorScheme.onSurface
                     }
@@ -158,10 +156,8 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
                     tint = when {
                         state.transmissionMode == TransmissionMode.VIBRATION ->
                             MaterialTheme.colorScheme.error
-
                         state.message.isBlank() || state.transmissionMode != TransmissionMode.NONE ->
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-
                         else ->
                             MaterialTheme.colorScheme.onSurface
                     }
@@ -185,24 +181,14 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
                     tint = when {
                         state.transmissionMode == TransmissionMode.SOUND ->
                             MaterialTheme.colorScheme.error
-
                         state.message.isBlank() || state.transmissionMode != TransmissionMode.NONE ->
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-
                         else ->
                             MaterialTheme.colorScheme.onSurface
                     }
                 )
             }
-
         }
-        Text(text = "Unit Time: ${state.unitTime} ms")
-        Slider(
-            value = state.unitTime.toFloat(),
-            onValueChange = { onEvent(MorseCodeEvent.SetUnitTime(it.toLong())) },
-            valueRange = 100f..450f,
-        )
-
     }
 }
 

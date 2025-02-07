@@ -11,4 +11,6 @@ sealed class Screen {
     data object FlashDetector : Screen()
     @Serializable
     data object Dictionary : Screen()
+    @Serializable
+    data object Settings : Screen()
 }

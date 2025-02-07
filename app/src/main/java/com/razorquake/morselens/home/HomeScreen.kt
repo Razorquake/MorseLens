@@ -4,11 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,10 +33,23 @@ import com.razorquake.morselens.R
 fun HomeScreen(
     onMorseCodeTranslator: () -> Unit,
     onFlashDetector: () -> Unit,
-    onDictionary: () -> Unit
+    onDictionary: () -> Unit,
+    onSettings: () -> Unit
 ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Text("Home", style = MaterialTheme.typography.headlineMedium)
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Text("Home", style = MaterialTheme.typography.headlineMedium)
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = {onSettings()},
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings Icon"
+                    )
+                }
+            }
             ListItem(
                 leadingContent = {
                     Box(

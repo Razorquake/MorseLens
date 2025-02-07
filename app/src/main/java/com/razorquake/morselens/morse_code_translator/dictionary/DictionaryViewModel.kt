@@ -1,14 +1,22 @@
 package com.razorquake.morselens.morse_code_translator.dictionary
 
 import androidx.lifecycle.viewModelScope
+import com.razorquake.morselens.data.PreferencesManager
 import com.razorquake.morselens.morse_code_translator.BaseMorseViewModel
 import com.razorquake.morselens.morse_code_translator.TransmissionMode
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DictionaryViewModel() : BaseMorseViewModel<DictionaryState>() {
+@HiltViewModel
+class DictionaryViewModel @Inject constructor(
+    preferencesManager: PreferencesManager
+) : BaseMorseViewModel<DictionaryState>(
+    preferencesManager = preferencesManager
+) {
     override val _state = MutableStateFlow(DictionaryState())
     override fun setTransmissionMode(mode: TransmissionMode) {
         _state.update { it.copy(transmissionMode = mode) }
@@ -16,10 +24,6 @@ class DictionaryViewModel() : BaseMorseViewModel<DictionaryState>() {
 
     override fun setError(error: String?) {
         _state.update { it.copy(error = error) }
-    }
-
-    override fun setUnitTime(unitTime: Long) {
-        _state.update { it.copy(unitTime = unitTime) }
     }
 
     private fun setActiveCharacter(char: Char?){
@@ -31,7 +35,7 @@ class DictionaryViewModel() : BaseMorseViewModel<DictionaryState>() {
     fun onEvent(event: DictionaryEvent): String? {
         when (event) {
             is DictionaryEvent.GetMorseCode -> {
-                return morseCodeMap[event.char.toChar()]
+                return morseCodeMap[event.char]
             }
             is DictionaryEvent.SendMorseCode -> {
                 activeTransmissionJob = viewModelScope.launch {
@@ -41,9 +45,6 @@ class DictionaryViewModel() : BaseMorseViewModel<DictionaryState>() {
                     )
                     setActiveCharacter(null)
                 }
-            }
-            is DictionaryEvent.SetUnitTime -> {
-                setUnitTime(event.unitTime)
             }
             DictionaryEvent.StopTransmission -> {
                 stopTransmission()

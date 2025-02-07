@@ -6,8 +6,7 @@ data class MorseCodeState(
     val message: String = "",
     override val error: String? = null,
     //Morse
-    override val unitTime: Long = 200L,
-    //Speech
+    // Speech
     val isListening: Boolean = false,
     var isTranslating: Boolean = false,
     val recognizedText: String = "",

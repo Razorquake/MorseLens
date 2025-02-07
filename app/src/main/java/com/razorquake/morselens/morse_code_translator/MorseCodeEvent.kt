@@ -4,8 +4,6 @@ import android.content.Context
 import com.razorquake.morselens.morse_code_translator.speech.Language
 
 sealed class MorseCodeEvent {
-    data class SetUnitTime(val unitTime: Long) : MorseCodeEvent()
-
     data class SetMessage(val message: String) : MorseCodeEvent()
     data class SendMorseCode(val context: Context, val mode: TransmissionMode) : MorseCodeEvent()
     data object StopTransmission : MorseCodeEvent()

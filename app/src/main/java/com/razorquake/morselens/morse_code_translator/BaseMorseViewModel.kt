@@ -10,6 +10,9 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.razorquake.morselens.data.PreferencesManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,10 +22,19 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class BaseMorseViewModel<S: BaseState> : ViewModel(){
+abstract class BaseMorseViewModel <S: BaseState>(
+    preferencesManager: PreferencesManager
+) : ViewModel(){
+    private val unitTime = preferencesManager.unitTimeFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = 200L
+    )
     protected abstract val _state: MutableStateFlow<S>
     protected var activeTransmissionJob: Job? = null
     protected val morseCodeMap = mapOf(
@@ -44,7 +56,6 @@ abstract class BaseMorseViewModel<S: BaseState> : ViewModel(){
 
     protected abstract fun setTransmissionMode(mode: TransmissionMode)
     protected abstract fun setError(error: String?)
-    protected abstract fun setUnitTime(unitTime: Long)
 
     protected suspend fun transmitMorseCode(context: Context, mode: TransmissionMode, message: String) = withContext(Dispatchers.IO) {
         if (_state.value.transmissionMode != TransmissionMode.NONE) {
@@ -55,7 +66,7 @@ abstract class BaseMorseViewModel<S: BaseState> : ViewModel(){
         setTransmissionMode(mode)
         setError(null)
 
-        val unitTime: Long = _state.value.unitTime
+        val unitTime: Long = unitTime.value
 
         if (message.isEmpty()) {
             setError("Message cannot be empty")
