@@ -1,4 +1,4 @@
-package com.razorquake.morselens.morse_code_translator
+package com.razorquake.morselens.morse_code_translator.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -10,13 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.razorquake.morselens.R
+import com.razorquake.morselens.morse_code_translator.TransmissionMode
 
 @Composable
 fun MorseCodeRow(
     isActive: Boolean,
     onTransmit: (TransmissionMode) -> Unit,
     onStop: () -> Unit,
-    transmissionMode: TransmissionMode
+    transmissionMode: TransmissionMode,
+    modifier: Modifier = Modifier
 ){
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -30,7 +32,7 @@ fun MorseCodeRow(
                     onTransmit(TransmissionMode.FLASHLIGHT)
                 }
             },
-            enabled = (transmissionMode == TransmissionMode.NONE || (isActive&&transmissionMode == TransmissionMode.FLASHLIGHT))
+            enabled = isActive&&(transmissionMode == TransmissionMode.NONE || transmissionMode == TransmissionMode.FLASHLIGHT)
         ) {
             Icon(
                 painter = painterResource(R.drawable.flash),
@@ -57,7 +59,7 @@ fun MorseCodeRow(
                 }
             },
             enabled =
-                    (transmissionMode == TransmissionMode.NONE || (transmissionMode == TransmissionMode.VIBRATION&&isActive))
+                    isActive&&(transmissionMode == TransmissionMode.NONE || transmissionMode == TransmissionMode.VIBRATION)
         ) {
             Icon(
                 painter = painterResource(R.drawable.vibration),
@@ -84,7 +86,7 @@ fun MorseCodeRow(
                 }
             },
             enabled =
-                    (transmissionMode == TransmissionMode.NONE || (transmissionMode == TransmissionMode.SOUND&&isActive))
+                    isActive&&(transmissionMode == TransmissionMode.NONE || transmissionMode == TransmissionMode.SOUND)
         ) {
             Icon(
                 painter = painterResource(R.drawable.volume_up),

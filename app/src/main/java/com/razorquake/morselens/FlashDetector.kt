@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.razorquake.morselens.morse_code_translator.components.CustomSlider
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
@@ -120,8 +120,8 @@ fun FlashDetector() {
                             color = Color.White,
                             modifier = Modifier.padding(8.dp)
                         )
-                        Slider(
-                            value = brightnessThreshold.toFloat(),
+                        CustomSlider(
+                            value = brightnessThreshold.toLong(),
                             onValueChange = { brightnessThreshold = it.toInt() },
                             valueRange = 0f..255f,
                             modifier = Modifier.padding(horizontal = 8.dp)
@@ -132,8 +132,8 @@ fun FlashDetector() {
                             color = Color.White,
                             modifier = Modifier.padding(8.dp)
                         )
-                        Slider(
-                            value = areaThreshold.toFloat(),
+                        CustomSlider(
+                            value = areaThreshold.toLong(),
                             onValueChange = { areaThreshold = it.toInt() },
                             valueRange = 0f..1000f,
                             modifier = Modifier.padding(horizontal = 8.dp)

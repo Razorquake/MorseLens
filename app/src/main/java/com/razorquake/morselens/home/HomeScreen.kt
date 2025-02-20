@@ -75,7 +75,7 @@ fun HomeScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable._678673),
+                                painter = painterResource(id = R.drawable.morse_code_svgrepo_com),
                                 contentDescription = "Sign Language Icon",
                                 tint = colorResource(R.color.text_title),
                                 modifier = Modifier.size(48.dp)

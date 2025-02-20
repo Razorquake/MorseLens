@@ -52,7 +52,7 @@ fun DictionaryScreen(
                 DictionaryItem(
                     char = char,
                     morseCode = eventHandler(DictionaryEvent.GetMorseCode(char)) ?: "",
-                    isActive = state.activeCharacter == char,
+                    isActive = state.activeCharacter == char||state.activeCharacter==null,
                     onTransmit = { mode ->
                         eventHandler(DictionaryEvent.SendMorseCode(context, mode, char))
                     },
@@ -73,7 +73,7 @@ fun DictionaryScreen(
                 DictionaryItem(
                     char = char,
                     morseCode = eventHandler(DictionaryEvent.GetMorseCode(char))?: "",
-                    isActive = state.activeCharacter == char,
+                    isActive = state.activeCharacter == char||state.activeCharacter==null,
                     onTransmit = { mode ->
                         eventHandler(DictionaryEvent.SendMorseCode(context, mode, char))
                     },
@@ -95,7 +95,7 @@ fun DictionaryScreen(
                 DictionaryItem(
                     char = char,
                     morseCode = eventHandler(DictionaryEvent.GetMorseCode(char))?:"",
-                    isActive = state.activeCharacter == char,
+                    isActive = state.activeCharacter == char||state.activeCharacter==null,
                     onTransmit = { mode ->
                         eventHandler(DictionaryEvent.SendMorseCode(context, mode, char))
                     },
