@@ -32,13 +32,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.razorquake.morselens.morse_code_translator.MorseCodeTranslator
-import com.razorquake.morselens.morse_code_translator.MorseCodeViewModel
-import com.razorquake.morselens.morse_code_translator.components.AnimatedNavigationBar
-import com.razorquake.morselens.morse_code_translator.dictionary.DictionaryScreen
-import com.razorquake.morselens.morse_code_translator.dictionary.DictionaryViewModel
-import com.razorquake.morselens.settings.SettingsScreen
-import com.razorquake.morselens.settings.SettingsViewModel
+import com.razorquake.morselens.ui.morse_code_translator.MorseCodeTranslator
+import com.razorquake.morselens.ui.morse_code_translator.MorseCodeViewModel
+import com.razorquake.morselens.ui.components.AnimatedNavigationBar
+import com.razorquake.morselens.ui.dictionary.DictionaryScreen
+import com.razorquake.morselens.ui.dictionary.DictionaryViewModel
+import com.razorquake.morselens.ui.settings.SettingsScreen
+import com.razorquake.morselens.ui.settings.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

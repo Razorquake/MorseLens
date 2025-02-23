@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         if (!OpenCVLoader.initLocal()) {
             Log.e("OpenCV", "Initialization failed")
         } else {
-            Log.d("OpenCV", "Initialization succeeded")
+            Log.d("OpenCV", "Initialization  succeeded")
         }
         enableEdgeToEdge()
         setContent {

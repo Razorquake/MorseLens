@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.razorquake.morselens.morse_code_translator.components.CustomSlider
+import com.razorquake.morselens.ui.components.CustomSlider
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
