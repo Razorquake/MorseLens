@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -53,7 +54,7 @@ import org.opencv.imgproc.Imgproc
 import java.util.concurrent.Executors
 
 @Composable
-fun FlashDetector() {
+fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
     val context = LocalContext.current
     var flashlightDetected by remember { mutableStateOf(false) }
     var currentMorse by remember { mutableStateOf("") }
@@ -111,33 +112,39 @@ fun FlashDetector() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(horizontal = 16.dp)
                             .align(Alignment.TopCenter)
-                            .background(Color.Black.copy(alpha = 0.5f))
+                            .padding(top = topPadding)
                     ) {
-                        Text(
-                            text = "Brightness Threshold: $brightnessThreshold",
-                            color = Color.White,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        CustomSlider(
-                            value = brightnessThreshold.toLong(),
-                            onValueChange = { brightnessThreshold = it.toInt() },
-                            valueRange = 0f..255f,
-                            modifier = Modifier.padding(horizontal = 8.dp)
-                        )
+                        Column(
+                            modifier = Modifier
+                                .background(Color.Black.copy(alpha = 0.5f))
 
-                        Text(
-                            text = "Area Threshold: $areaThreshold",
-                            color = Color.White,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        CustomSlider(
-                            value = areaThreshold.toLong(),
-                            onValueChange = { areaThreshold = it.toInt() },
-                            valueRange = 0f..1000f,
-                            modifier = Modifier.padding(horizontal = 8.dp)
-                        )
+                        ) {
+                            Text(
+                                text = "Brightness Threshold: $brightnessThreshold",
+                                color = Color.White,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                            CustomSlider(
+                                value = brightnessThreshold.toLong(),
+                                onValueChange = { brightnessThreshold = it.toInt() },
+                                valueRange = 0f..255f,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+
+                            Text(
+                                text = "Area Threshold: $areaThreshold",
+                                color = Color.White,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                            CustomSlider(
+                                value = areaThreshold.toLong(),
+                                onValueChange = { areaThreshold = it.toInt() },
+                                valueRange = 0f..1000f,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
                     }
 
                     // Status and detection overlay
@@ -145,39 +152,38 @@ fun FlashDetector() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
+                            .padding(bottom = bottomPadding)
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
 
-                        Box(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(Color.Black.copy(alpha = 0.5f))
                                 .padding(16.dp)
                         ) {
-                            Column {
-                                Text(
-                                    text = if (flashlightDetected) "Flash Detected!" else "No Flash Detected",
-                                    color = if (flashlightDetected) Color.Green else Color.Red,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
+                            Text(
+                                text = if (flashlightDetected) "Flash Detected!" else "No Flash Detected",
+                                color = if (flashlightDetected) Color.Green else Color.Red,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold
+                            )
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                                Text(
-                                    text = "Current Morse: $currentMorse",
-                                    color = Color.White,
-                                    fontSize = 16.sp
-                                )
+                            Text(
+                                text = "Current Morse: $currentMorse",
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
 
-                                Text(
-                                    text = "Decoded Text: ${if (decodedMessage.length > 30) decodedMessage.takeLast(30) else decodedMessage}",
-                                    color = Color.White,
-                                    fontSize = 16.sp
-                                )
-                            }
+                            Text(
+                                text = "Decoded Text: ${if (decodedMessage.length > 30) decodedMessage.takeLast(30) else decodedMessage}",
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
                         }
                     }
                 }
@@ -216,7 +222,7 @@ fun CameraPreview(
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
                 val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+                    it.surfaceProvider = previewView.surfaceProvider
                 }
 
                 val imageAnalyzer = ImageAnalysis.Builder()

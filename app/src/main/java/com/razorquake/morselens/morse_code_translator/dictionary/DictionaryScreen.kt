@@ -7,26 +7,35 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DictionaryScreen(
     state: DictionaryState,
-    eventHandler: (DictionaryEvent) -> String?
+    eventHandler: (DictionaryEvent) -> String?,
+    bottomPadding: Dp,
+    topPadding: Dp
 ) {
     val context = LocalContext.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(
+                top = topPadding,
+                bottom = bottomPadding
+            )
+            .padding(horizontal = 16.dp)
     ) {
         // Error message
         state.error?.let { error ->
@@ -44,8 +53,21 @@ fun DictionaryScreen(
         ) {
             // Alphabets
             stickyHeader{
-                Surface(modifier = Modifier.fillParentMaxWidth()) {
-                    Text("Alphabets", style = MaterialTheme.typography.titleMedium)
+                Surface(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .clip(
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                ) {
+                    Text(
+                        "Alphabets",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .padding(
+                                start = 4.dp
+                            )
+                    )
                 }
             }
             items(('A'..'Z').toList()) { char ->
@@ -65,8 +87,21 @@ fun DictionaryScreen(
 
             // Numbers
             stickyHeader {
-                Surface(modifier = Modifier.fillParentMaxWidth()) {
-                    Text("Numbers", style = MaterialTheme.typography.titleMedium)
+                Surface(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .clip(
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                ) {
+                    Text(
+                        "Numbers",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .padding(
+                                start = 4.dp
+                            )
+                    )
                 }
             }
             items(('0'..'9').toList()) { char ->
@@ -86,8 +121,21 @@ fun DictionaryScreen(
 
             // Special characters
             stickyHeader {
-                Surface(modifier = Modifier.fillParentMaxWidth()) {
-                    Text("Special Characters", style = MaterialTheme.typography.titleMedium)
+                Surface(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .clip(
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                ) {
+                    Text(
+                        "Special Characters",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .padding(
+                                start = 4.dp
+                            )
+                    )
                 }
             }
             val specialChars = ".,?/@!()=+-&:;\$\"_"

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -33,12 +32,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.razorquake.morselens.R
 import com.razorquake.morselens.ui.theme.MorseLensTheme
 
 
 @Composable
-fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit) {
+fun MorseCodeTranslator(
+    state: MorseCodeState,
+    onEvent: (MorseCodeEvent) -> Unit,
+    bottomPadding: Dp,
+    topPadding: Dp
+) {
     val context = LocalContext.current
     // State to track permission
     var hasAudioPermission by remember {
@@ -59,7 +64,11 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .padding(
+                top = topPadding,
+                bottom = bottomPadding
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -197,6 +206,11 @@ fun MorseCodeTranslator(state: MorseCodeState, onEvent: (MorseCodeEvent) -> Unit
 @Composable
 fun MorseCodeTranslatorPreview() {
     MorseLensTheme {
-        MorseCodeTranslator(state = MorseCodeState(), onEvent = {})
+        MorseCodeTranslator(
+            state = MorseCodeState(),
+            onEvent = {},
+            bottomPadding = 0.dp,
+            topPadding = 0.dp
+        )
     }
 }

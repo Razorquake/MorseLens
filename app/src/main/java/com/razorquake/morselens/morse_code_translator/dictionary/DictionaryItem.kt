@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.razorquake.morselens.morse_code_translator.components.MorseCodeRow
@@ -47,17 +48,21 @@ fun DictionaryItem(
                     width = 48.dp,
                     height = 48.dp
                 ),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = char.toString(),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Color.Black
+                    )
                 )
                 Text(
                     text = morseCode,
                     fontWeight = FontWeight.ExtraBold,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black
+                    )
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
