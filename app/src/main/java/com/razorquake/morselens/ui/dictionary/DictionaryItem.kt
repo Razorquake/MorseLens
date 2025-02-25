@@ -75,8 +75,7 @@ fun DictionaryItem(
                 isActive = isActive,
                 onTransmit = onTransmit,
                 onStop = onStop,
-                transmissionMode = transmissionMode,
-                modifier = Modifier
+                transmissionMode = transmissionMode
             )
         }
     }

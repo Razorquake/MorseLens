@@ -17,8 +17,7 @@ fun MorseCodeRow(
     isActive: Boolean,
     onTransmit: (TransmissionMode) -> Unit,
     onStop: () -> Unit,
-    transmissionMode: TransmissionMode,
-    modifier: Modifier = Modifier
+    transmissionMode: TransmissionMode
 ){
     Row(
         modifier = Modifier.fillMaxWidth(),

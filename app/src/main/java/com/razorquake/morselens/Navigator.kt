@@ -37,6 +37,7 @@ import com.razorquake.morselens.ui.morse_code_translator.MorseCodeViewModel
 import com.razorquake.morselens.ui.components.AnimatedNavigationBar
 import com.razorquake.morselens.ui.dictionary.DictionaryScreen
 import com.razorquake.morselens.ui.dictionary.DictionaryViewModel
+import com.razorquake.morselens.ui.flashlight.FlashDetector
 import com.razorquake.morselens.ui.settings.SettingsScreen
 import com.razorquake.morselens.ui.settings.SettingsViewModel
 

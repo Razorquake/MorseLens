@@ -77,6 +77,8 @@ class MorseCodeViewModel @Inject constructor(
                         error = "Failed to start speech recognition: ${e.message}"
                     )
                 }
+            } finally {
+                translator.cleanup()
             }
         }
     }
@@ -84,6 +86,7 @@ class MorseCodeViewModel @Inject constructor(
     private fun stopListening() {
         speechRecognizer?.stopListening()
         speechRecognizer?.destroy()
+        translator.cleanup()
         speechRecognizer = null
         _state.update { it.copy(isListening = false) }
     }

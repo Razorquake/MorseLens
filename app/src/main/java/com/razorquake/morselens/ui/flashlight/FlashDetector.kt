@@ -1,19 +1,18 @@
-package com.razorquake.morselens
+package com.razorquake.morselens.ui.flashlight
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,11 +20,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -45,12 +47,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.razorquake.morselens.ui.components.CustomSlider
-import org.opencv.android.Utils
-import org.opencv.core.Core
-import org.opencv.core.Mat
-import org.opencv.core.MatOfPoint
-import org.opencv.core.Size
-import org.opencv.imgproc.Imgproc
+import java.util.Locale
 import java.util.concurrent.Executors
 
 @Composable
@@ -61,6 +58,14 @@ fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
     var decodedMessage by remember { mutableStateOf("") }
     var brightnessThreshold by remember { mutableIntStateOf(240) }
     var areaThreshold by remember { mutableIntStateOf(300) }
+    var camera by remember { mutableStateOf<Camera?>(null)}
+    var zoomRatio by remember { mutableFloatStateOf(1.0f) }
+
+    // Maximum zoom supported by the device (will be updated when camera is available)
+    var maxZoom by remember { mutableFloatStateOf(5.0f) }
+
+    // For pinch-to-zoom gesture detection
+    var scale by remember { mutableFloatStateOf(1f) }
 
     // State to track permission
     var hasCameraPermission by remember {
@@ -87,10 +92,27 @@ fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTransformGestures { _, _, zoom, _ ->
+                    // Update scale factor with the zoom
+                    scale *= zoom
+
+                    // Keep the scale within bounds (0.5 to maxZoom)
+                    scale = scale.coerceIn(0.5f, maxZoom)
+
+                    // Apply zoom to camera
+                    camera?.cameraControl?.setZoomRatio(scale)
+                    zoomRatio = scale
+                }
+            }
+    ) {
         when {
             hasCameraPermission -> {
                 Box(modifier = Modifier.fillMaxSize()) {
+
                     // Camera Preview
                     CameraPreview(
                         onFrameAnalyzed = { isDetected ->
@@ -103,7 +125,19 @@ fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
                             }
                         },
                         brightnessThreshold = brightnessThreshold,
-                        areaThreshold = areaThreshold
+                        areaThreshold = areaThreshold,
+                        onCameraAvailable = { cam ->
+                            camera = cam
+                            maxZoom = cam.cameraInfo.zoomState.value?.maxZoomRatio ?: 5.0f
+                        }
+                    )
+                    // Show current zoom level
+                    Text(
+                        text = String.format(Locale.US, "%.1fx", zoomRatio),
+                        color = Color.White,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .statusBarsPadding()
                     )
                     // Add DetectionCircle overlay
                     DetectionCircle(isFlashDetected = flashlightDetected)
@@ -209,7 +243,8 @@ fun CameraPreview(
     onFrameAnalyzed: (Boolean) -> Unit,
     onMessageUpdate: (String, String) -> Unit,
     brightnessThreshold: Int,
-    areaThreshold: Int
+    areaThreshold: Int,
+    onCameraAvailable: (Camera) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -239,12 +274,14 @@ fun CameraPreview(
 
                 try {
                     cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
+                    val camera = cameraProvider.bindToLifecycle(
                         lifecycleOwner,
                         CameraSelector.DEFAULT_BACK_CAMERA,
                         preview,
                         imageAnalyzer
                     )
+                    // Pass camera reference back to calling function
+                    onCameraAvailable(camera)
                 } catch (exc: Exception) {
                     exc.printStackTrace()
                     // Handle any errors
@@ -285,168 +322,3 @@ fun DetectionCircle(
     }
 }
 
-class FlashlightAnalyzer(
-    private val onFlashlightDetected: (Boolean) -> Unit,
-    private val onMessageUpdate: (String, String) -> Unit,
-    private val brightnessThreshold: Int,
-    private val areaThreshold: Int
-) : ImageAnalysis.Analyzer {
-    private var lastAnalysisTimestamp = 0L
-    private val ANALYSIS_INTERVAL = 100L // Analyze every 100ms
-    private val morseDetector = MorseCodeDetector()
-    private var detectedContour: MatOfPoint? = null
-
-    // Morse code timing parameters (in seconds)
-    private val DIT_MAX_DURATION = 0.3
-    private val DASH_MIN_DURATION = 0.3
-    private val LETTER_GAP = 0.7
-    private val WORD_GAP = 1.3
-
-    // State variables
-    private var lastLightState = false
-    private var lightStartTime = 0L
-    private var lastLightEndTime = 0L
-    private val detectionCircleRadius = 20 // matches Python implementation
-    private var currentMorse = ""
-    private var decodedText = ""
-
-    @androidx.camera.core.ExperimentalGetImage
-    override fun analyze(image: ImageProxy) {
-        val currentTimestamp = System.currentTimeMillis()
-        if (currentTimestamp - lastAnalysisTimestamp >= ANALYSIS_INTERVAL) {
-            val rotationDegrees = image.imageInfo.rotationDegrees
-            val bitmap = image.toBitmap()
-            val rotatedBitmap = rotateBitmap(bitmap, rotationDegrees.toFloat())
-
-            val mat = Mat()
-            Utils.bitmapToMat(rotatedBitmap, mat)
-
-            val (isFlashlightDetected, contour) = detectMobileFlashlight(mat)
-            detectedContour = contour
-            onFlashlightDetected(isFlashlightDetected)
-
-            // Process morse code signal
-            processFlashSignal(isFlashlightDetected, currentTimestamp)
-
-            lastAnalysisTimestamp = currentTimestamp
-            mat.release()
-        }
-        image.close()
-    }
-
-    private fun detectMobileFlashlight(mat: Mat): Pair<Boolean, MatOfPoint?> {
-        val width = mat.width()
-        val height = mat.height()
-
-        // Create circular mask
-        val mask = Mat.zeros(height, width, org.opencv.core.CvType.CV_8UC1)
-        val center = org.opencv.core.Point(width / 2.0, height / 2.0)
-        Imgproc.circle(mask, center, detectionCircleRadius, org.opencv.core.Scalar(255.0), -1)
-
-        // Convert to grayscale and apply mask
-        val gray = Mat()
-        Imgproc.cvtColor(mat, gray, Imgproc.COLOR_RGB2GRAY)
-        val maskedGray = Mat()
-        Core.bitwise_and(gray, gray, maskedGray, mask)
-
-        // Apply Gaussian blur
-        Imgproc.GaussianBlur(maskedGray, maskedGray, Size(5.0, 5.0), 0.0)
-
-        // Threshold to detect bright spots
-        val threshold = Mat()
-        Imgproc.threshold(maskedGray, threshold, brightnessThreshold.toDouble(), 255.0, Imgproc.THRESH_BINARY)
-
-        // Find contours
-        val contours = mutableListOf<MatOfPoint>()
-        val hierarchy = Mat()
-        Imgproc.findContours(threshold, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE)
-
-        var detectedContour: MatOfPoint? = null
-        for (contour in contours) {
-            val area = Imgproc.contourArea(contour)
-            if (area > areaThreshold) {
-                detectedContour = contour
-                break
-            }
-        }
-
-        // Clean up
-        mask.release()
-        gray.release()
-        maskedGray.release()
-        threshold.release()
-        hierarchy.release()
-
-        return Pair(detectedContour != null, detectedContour)
-    }
-
-    private fun processFlashSignal(isFlashlightDetected: Boolean, currentTimestamp: Long) {
-
-        // Handle light state changes
-        if (isFlashlightDetected != lastLightState) {
-            if (isFlashlightDetected) {
-                // Light just turned on
-                lightStartTime = currentTimestamp
-            } else {
-                // Light just turned off
-                val duration = (currentTimestamp - lightStartTime) / 1000.0
-                // Classify as dit or dash
-                currentMorse += when {
-                    duration < DIT_MAX_DURATION -> "."
-                    duration >= DASH_MIN_DURATION -> "-"
-                    else -> "" // Ignore signals between DIT_MAX and DASH_MIN
-                }
-                lastLightEndTime = currentTimestamp
-                onMessageUpdate(currentMorse, "") // Update current morse without decoding
-            }
-            lastLightState = isFlashlightDetected
-        }
-
-        // Check for letter gap
-        else if (!isFlashlightDetected && currentMorse.isNotEmpty() &&
-            ((currentTimestamp - lastLightEndTime) / 1000.0) > LETTER_GAP) {
-            // Decode the current morse sequence
-            val decodedLetter = morseDetector.decodeMorse(currentMorse)
-            if (decodedLetter.isNotEmpty()) {
-                decodedText += decodedLetter
-                onMessageUpdate(currentMorse, decodedText)
-            }
-            currentMorse = ""
-            lastLightEndTime = currentTimestamp
-        }
-
-        // Check for word gap
-        else if (!isFlashlightDetected && decodedText.isNotEmpty() &&
-            ((currentTimestamp - lastLightEndTime) / 1000.0) > WORD_GAP) {
-            if (!decodedText.endsWith(" ")) {
-                decodedText += " "
-                onMessageUpdate(currentMorse, decodedText)
-            }
-            lastLightEndTime = currentTimestamp
-        }
-    }
-
-    private fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
-        val matrix = Matrix().apply { postRotate(degrees) }
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-}
-
-class MorseCodeDetector {
-    companion object {
-        private val MORSE_CODE_DICT = mapOf(
-            ".-" to "A", "-..." to "B", "-.-." to "C", "-.." to "D", "." to "E",
-            "..-." to "F", "--." to "G", "...." to "H", ".." to "I", ".---" to "J",
-            "-.-" to "K", ".-.." to "L", "--" to "M", "-." to "N", "---" to "O",
-            ".--." to "P", "--.-" to "Q", ".-." to "R", "..." to "S", "-" to "T",
-            "..-" to "U", "...-" to "V", ".--" to "W", "-..-" to "X", "-.--" to "Y",
-            "--.." to "Z", "-----" to "0", ".----" to "1", "..---" to "2",
-            "...--" to "3", "....-" to "4", "....." to "5", "-..." to "6",
-            "--..." to "7", "---.." to "8", "----." to "9"
-        )
-    }
-
-    fun decodeMorse(morseSequence: String): String {
-        return MORSE_CODE_DICT[morseSequence] ?: ""
-    }
-}
