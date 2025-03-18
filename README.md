@@ -64,7 +64,7 @@ MorseLens is an Android application that allows users to translate, transmit, an
 
 ## License
 
-[Add license information]
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
