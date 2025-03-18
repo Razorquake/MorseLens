@@ -1,5 +1,10 @@
 # MorseLens
 
+![Platform](https://img.shields.io/badge/platform-Android-blue.svg)
+![Kotlin](https://img.shields.io/badge/Kotlin-1.5.10-blue.svg)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
 MorseLens is an Android application that allows users to translate, transmit, and detect Morse code using multiple methods including flashlight, vibration, and sound.
 
 ## Features
@@ -63,4 +68,4 @@ MorseLens is an Android application that allows users to translate, transmit, an
 
 ## Credits
 
-Developed by [Your Name]
+Developed by [Anant Jaiswal](https://github.com/Razorquake), [Aryan Sharma](https://github.com/idAryan)
