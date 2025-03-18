@@ -42,6 +42,10 @@ MorseLens is an Android application that allows users to translate, transmit, an
 
 ### Installation
 1. Clone this repository
+    ```sh
+    git clone https://github.com/Razorquake/Newz.git
+    cd Newz
+    ```
 2. Open the project in Android Studio
 3. Sync project with Gradle files
 4. Run on an emulator or physical device
