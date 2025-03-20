@@ -26,15 +26,17 @@ import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import com.razorquake.morselens.R
 import com.razorquake.morselens.ui.components.LanguageSelector
 import com.razorquake.morselens.ui.components.WaveformVisualizer
@@ -45,8 +47,7 @@ import com.razorquake.morselens.ui.theme.MorseLensTheme
 fun MorseCodeTranslator(
     state: MorseCodeState,
     onEvent: (MorseCodeEvent) -> Unit,
-    bottomPadding: Dp,
-    topPadding: Dp
+    innerPadding: PaddingValues
 ) {
     val context = LocalContext.current
     // State to track permission
@@ -70,9 +71,9 @@ fun MorseCodeTranslator(
             .fillMaxSize()
             .padding(16.dp)
             .padding(
-                top = topPadding,
-                bottom = bottomPadding
-            ),
+                innerPadding
+            )
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -218,8 +219,7 @@ fun MorseCodeTranslatorPreview() {
         MorseCodeTranslator(
             state = MorseCodeState(),
             onEvent = {},
-            bottomPadding = 0.dp,
-            topPadding = 0.dp
+            innerPadding = PaddingValues(0.dp)
         )
     }
 }

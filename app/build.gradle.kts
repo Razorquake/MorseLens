@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     implementation (libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.material3.window.size.class1)
 }
 java {
     toolchain {

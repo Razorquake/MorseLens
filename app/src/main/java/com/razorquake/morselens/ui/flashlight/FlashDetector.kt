@@ -51,7 +51,7 @@ import java.util.Locale
 import java.util.concurrent.Executors
 
 @Composable
-fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
+fun FlashDetector(bottomPadding: Dp, topPadding: Dp, rightPadding: Dp, leftPadding: Dp) {
     val context = LocalContext.current
     var flashlightDetected by remember { mutableStateOf(false) }
     var currentMorse by remember { mutableStateOf("") }
@@ -148,7 +148,7 @@ fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .align(Alignment.TopCenter)
-                            .padding(top = topPadding)
+                            .padding(top = topPadding, end = rightPadding, start = leftPadding)
                     ) {
                         Column(
                             modifier = Modifier
@@ -186,7 +186,7 @@ fun FlashDetector(bottomPadding: Dp, topPadding: Dp) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
-                            .padding(bottom = bottomPadding)
+                            .padding(bottom = bottomPadding, end = rightPadding, start = leftPadding)
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
 

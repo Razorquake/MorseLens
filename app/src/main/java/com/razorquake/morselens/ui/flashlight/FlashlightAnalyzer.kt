@@ -36,7 +36,7 @@ class FlashlightAnalyzer(
     private var lastLightState = false
     private var lightStartTime = 0L
     private var lastLightEndTime = 0L
-    private val detectionCircleRadius = 20 // matches Python implementation
+    private val detectionCircleRadius = 20
     private var currentMorse = ""
     private var decodedText = ""
 

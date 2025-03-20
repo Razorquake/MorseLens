@@ -3,6 +3,7 @@ package com.razorquake.morselens.ui.dictionary
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -23,8 +23,7 @@ import androidx.compose.ui.unit.dp
 fun DictionaryScreen(
     state: DictionaryState,
     eventHandler: (DictionaryEvent) -> String?,
-    bottomPadding: Dp,
-    topPadding: Dp
+    innerPadding: PaddingValues
 ) {
     val context = LocalContext.current
 
@@ -32,8 +31,7 @@ fun DictionaryScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                top = topPadding,
-                bottom = bottomPadding
+                innerPadding
             )
             .padding(horizontal = 16.dp)
     ) {
