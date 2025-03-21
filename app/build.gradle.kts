@@ -52,6 +52,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.opencv)
     implementation(libs.translate)
     implementation(libs.androidx.core.ktx)
