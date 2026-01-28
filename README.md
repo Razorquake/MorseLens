@@ -23,6 +23,10 @@ MorseLens is an Android application that allows users to translate, transmit, an
 
 [Place screenshots here]
 
+## Demo
+
+<iframe src="https://drive.google.com/file/d/1R5SutPctfSE6VkIy3JAvww5978jw9jix/preview" width="640" height="480"></iframe>
+
 ## Technology Stack
 
 - **Kotlin** and **Jetpack Compose** for modern Android UI development
